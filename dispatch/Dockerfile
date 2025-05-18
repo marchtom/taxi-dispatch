@@ -1,7 +1,5 @@
-# Use an official Python runtime as a parent image
 FROM python:3.12-slim
 
-# Set the working directory in the container
 WORKDIR /app
 
 RUN pip install poetry==2.1.3
@@ -11,14 +9,14 @@ RUN apt-get update \
 
 COPY pyproject.toml poetry.lock ./
 
-# # Install any needed dependencies
 RUN poetry config virtualenvs.create false \
     && poetry install --no-root --no-interaction --no-ansi
 
+COPY alembic.ini ./
+COPY alembic ./alembic
 COPY app ./app
 COPY tests ./tests
 
 EXPOSE 8080
 
-# Run main.py when the container launches
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
