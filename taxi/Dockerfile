@@ -15,7 +15,9 @@ COPY pyproject.toml poetry.lock ./
 RUN poetry config virtualenvs.create false \
     && poetry install --no-root --no-interaction --no-ansi
 
-COPY app/ app/
+COPY app ./app
+COPY tests ./tests
+
 EXPOSE 8081
 
 # Run main.py when the container launches
