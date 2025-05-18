@@ -1,0 +1,24 @@
+services:
+  dispatch:
+    build:
+      context: ./dispatch
+    container_name: dispatch
+    ports:
+      - "8080:8080"
+    networks:
+      - taxi_net
+
+  taxi:
+    build:
+      context: ./taxi
+    container_name: taxi
+    networks:
+      - taxi_net
+    environment:
+      DISPATCH_URL: http://dispatch:8080
+    depends_on:
+      - dispatch
+
+networks:
+  taxi_net:
+    external: true

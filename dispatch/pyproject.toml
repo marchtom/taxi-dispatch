@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "app"
+version = "0.1.0"
+description = "Dispatch service"
+authors = ["Tomasz Marchlewski"]
+
+[tool.poetry.dependencies]
+python = "^3.12.10"
+fastapi = "^0.115.0"
+uvicorn = "^0.34.0"
+httpx = "^0.28.0"
+
+[tool.poetry.group.dev.dependencies]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
