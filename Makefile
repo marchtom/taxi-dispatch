@@ -54,17 +54,17 @@ build-taxi: ## Build taxi image
 
 tests: ## Run all tests
 	@printf "$(COLOR_GREEN)\nRunning tests for DISPATCH$(COLOR_DEFAULT)\n\n"
-	@$(DOCKER_COMPOSE) run --build dispatch poetry --quiet run pytest -x --cov=app --cov-report=term-missing
+	@$(DOCKER_COMPOSE) run --rm --build dispatch poetry --quiet run pytest -x --cov=app --cov-report=term-missing
 	@printf "$(COLOR_GREEN)\nRunning tests for TAXI$(COLOR_DEFAULT)\n\n"
-	@$(DOCKER_COMPOSE) run --build taxi poetry --quiet run pytest -x --cov=app --cov-report=term-missing
+	@$(DOCKER_COMPOSE) run --rm  --build taxi poetry --quiet run pytest -x --cov=app --cov-report=term-missing
 .PHONY: test
 
 tests-dispatch: ## Run dispatch tests
-	@$(DOCKER_COMPOSE) run --build dispatch poetry --quiet run pytest -x --cov=app --cov-report=term-missing
+	@$(DOCKER_COMPOSE) run --rm --build dispatch poetry --quiet run pytest -x -v --cov=app --cov-report=term-missing
 .PHONY: test-dispatch
 
 tests-taxi: ## Run taxi tests
-	@$(DOCKER_COMPOSE) run --build taxi poetry --quiet run pytest -x --cov=app --cov-report=term-missing
+	@$(DOCKER_COMPOSE) run --rm --build taxi poetry --quiet run pytest -x -v --cov=app --cov-report=term-missing
 .PHONY: test-taxi
 
 migrate: ## Run database migration

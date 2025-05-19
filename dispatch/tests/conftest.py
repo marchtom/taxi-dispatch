@@ -1,27 +1,35 @@
 import os
+import pathlib
 
+import httpx
 import pytest
-from fastapi.testclient import TestClient
+import pytest_asyncio
+from alembic.command import upgrade as alembic_upgrade
+from alembic.config import Config
+from httpx import AsyncClient
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 
 from app.main import app
 from app.db import Base, get_db
-from alembic.config import Config
-from alembic import command
 
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://dispatch:dispatch@localhost:5432/dispatch_test")
+DATABASE_URL = os.environ["DATABASE_URL"]
 
 
 @pytest.fixture(scope="session")
-async def migrated_postgres():
-    alembic_cfg = Config("dispatch/alembic.ini")
-    command.upgrade(alembic_cfg, "head")
-    yield
+def apply_migrations():
+    base_dir = pathlib.Path(__file__).resolve().parent.parent
+    path_to_cfg = str(base_dir / "alembic.ini")
+
+    alembic_cfg = Config(path_to_cfg)
+    alembic_cfg.set_main_option("sqlalchemy.url", DATABASE_URL.replace("+asyncpg", ""))
+
+    alembic_upgrade(alembic_cfg, "head")
 
 
-@pytest.fixture(scope="function")
-async def db_session(migrated_postgres):
+@pytest.fixture
+async def db_session(apply_migrations):
     engine = create_async_engine(DATABASE_URL, future=True)
     async_session = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
@@ -29,13 +37,16 @@ async def db_session(migrated_postgres):
         yield session
 
         for table in reversed(Base.metadata.sorted_tables):
-            await session.execute(f'TRUNCATE TABLE "{table.name}" RESTART IDENTITY CASCADE;')
+            await session.execute(text(f'TRUNCATE TABLE "{table.name}" RESTART IDENTITY CASCADE;'))
 
         await session.commit()
 
 
-@pytest.fixture
-def application(db_session):
+@pytest_asyncio.fixture
+async def client(db_session):
     app.dependency_overrides[get_db] = lambda: db_session
-    with TestClient(app) as c:
-        yield c
+    async with AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="http://test",
+    ) as ac:
+        yield ac

@@ -1,7 +1,6 @@
 import typing as t
-from fastapi import Depends
 
-
+from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,7 +14,7 @@ class TaxiCrud:
     
     async def get_all(self) -> t.Sequence[TaxiModel] | None:
         results = await self.session.execute(select(TaxiModel))
-        items: t.Sequence[TaxiModel] | None = results.all()
+        items: t.Sequence[TaxiModel] | None = results.scalars().all()
         return items
 
     async def get_by_id(self, id_: str) -> TaxiModel:
@@ -23,14 +22,17 @@ class TaxiCrud:
         result = await self.session.execute(query)
         item: TaxiModel | None = result.scalars().first()
         if not item:
-            raise Exception(f"Taxi.ID: `{id_}` not found.")
+            raise HTTPException(
+                status_code=404,
+                detail=f"Taxi.ID: `{id_}` not found.",
+            )
         return item
     
     async def create_taxi(self, request_body: TaxiPostRequest):
         item = TaxiModel.create(
             id=request_body.id,
             callback_url=request_body.callback_url,
-            active=request_body.active,
+            available=request_body.available,
             x=request_body.x,
             y=request_body.y,
         )

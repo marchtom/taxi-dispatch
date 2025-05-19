@@ -1,17 +1,11 @@
-import logging
-
 from fastapi import FastAPI
 
-from app.routers import taxi
+from app.routers import taxi, trip
 
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-TAXI_DB = {}
 
 app = FastAPI()
 app.include_router(taxi.router)
+app.include_router(trip.router)
 
 
 @app.get("/")

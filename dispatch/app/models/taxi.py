@@ -6,9 +6,9 @@ from app.db import Base
 class Taxi(Base):
     __tablename__ = "taxi"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[str] = mapped_column(primary_key=True)
     callback_url: Mapped[str] = mapped_column()
-    active: Mapped[bool] = mapped_column(default=True)
+    available: Mapped[bool] = mapped_column(default=True)
     x: Mapped[int] = mapped_column()
     y: Mapped[int] = mapped_column()
 
@@ -17,14 +17,14 @@ class Taxi(Base):
         cls,
         id: str,
         callback_url: str,
-        active: bool,
+        available: bool,
         x: int,
         y: int,
     ) -> "Taxi":
         kwargs = {
             "id": id,
             "callback_url": callback_url,
-            "active": active,
+            "available": available,
             "x": x,
             "y": y,
         }

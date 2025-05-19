@@ -3,7 +3,7 @@ import logging
 from fastapi import APIRouter
 
 from app.dependencies import TaxiCrudDep
-from app.schemas.taxi import TaxiPostRequest, TaxiPostResponse, TaxiNotifyMessage
+from app.schemas.taxi import TaxiPostRequest, TaxiPostResponse, TaxiGetRequest
 
 
 logging.basicConfig(level=logging.INFO)
@@ -17,16 +17,25 @@ router = APIRouter(
 
 
 @router.get(
-    r"/",
-    response_model=TaxiPostResponse,
+    "",
+    response_model=list[TaxiGetRequest],
 )
-async def taxi_list(crud: TaxiCrudDep):
+async def list_taxi(crud: TaxiCrudDep) -> list[TaxiGetRequest]:
     items = await crud.get_all()
     return items
 
 
+@router.get(
+    r"/{id_}",
+    response_model=TaxiGetRequest,
+)
+async def get_taxi(id_: str, crud: TaxiCrudDep) -> TaxiGetRequest:
+    item = await crud.get_by_id(id_)
+    return item
+
+
 @router.post(
-    r"/",
+    "",
     response_model=TaxiPostResponse,
 )
 async def create_taxi(
@@ -35,11 +44,3 @@ async def create_taxi(
 ) -> TaxiPostResponse:
     item = await crud.create_taxi(request_body)
     return TaxiPostResponse(id=item.id)
-
-
-# @router.post(r"/{id_}")
-# def notify_taxi(id_:str, data: TaxiNotifyMessage) -> str:
-#     url = ...  # urljoin(TAXI_DB[id_], "message")
-#     logger.info(f"Sending request to taxi, url: {url}")
-#     httpx.post(url, json={"message": data.message})
-#     return "ok"

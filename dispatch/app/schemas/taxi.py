@@ -4,7 +4,7 @@ from pydantic import BaseModel
 class TaxiGetRequest(BaseModel):
     id: str
     callback_url: str
-    active: bool
+    available: bool
     x: int
     y: int
 
@@ -12,7 +12,7 @@ class TaxiGetRequest(BaseModel):
 class TaxiPostRequest(BaseModel):
     id: str
     callback_url: str
-    active: bool
+    available: bool
     x: int
     y: int
 
