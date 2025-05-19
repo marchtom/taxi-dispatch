@@ -20,3 +20,7 @@ class TripPostRequest(BaseModel):
     y_start: int
     x_stop: int
     y_stop: int
+
+
+class TripPostResponse(BaseModel):
+    id: str

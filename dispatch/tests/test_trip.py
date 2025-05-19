@@ -51,7 +51,8 @@ async def test_trip_create(client):
         "/trip",
         json=payload,
     )
-    assert resp.status_code == 204
+    assert resp.status_code == 200
+    assert resp.json() == {"id": "trip-id-1"}
 
     resp_get = await client.get(f"/trip/{payload['id']}")
     assert resp_get.status_code == 200
