@@ -1,7 +1,13 @@
 from fastapi import APIRouter
 
 from app.dependencies import TripCrudDep
-from app.schemas.trip import TripGetRequest, TripPostRequest, TripPostResponse
+from app.schemas.trip import (
+    TripGetResponse,
+    TripPatchRequest,
+    TripPatchResponse,
+    TripPostRequest,
+    TripPostResponse,
+)
 
 
 router = APIRouter(
@@ -12,10 +18,10 @@ router = APIRouter(
 
 @router.get(
     r"/{id_}",
-    response_model=TripGetRequest,
+    response_model=TripGetResponse,
     description="Get info about a single trip",
 )
-async def get_trip(id_: str, crud: TripCrudDep) -> TripGetRequest:
+async def get_trip(id_: str, crud: TripCrudDep) -> TripGetResponse:
     return await crud.get_by_id(id_)
 
 
@@ -29,3 +35,16 @@ async def create_trip(
     crud: TripCrudDep,
 ) -> TripPostResponse:
     return await crud.create_trip(request_body)
+
+
+@router.patch(
+    r"/{id_}",
+    response_model=TripPatchResponse,
+    description="Update existing trip",
+)
+async def update_trip(
+    id_: str,
+    request_body: TripPatchRequest,
+    crud: TripCrudDep,
+) -> TripPatchResponse:
+    return await crud.update_trip(id_, request_body)

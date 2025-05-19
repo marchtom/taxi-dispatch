@@ -1,8 +1,10 @@
+from datetime import datetime, timezone
+
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.schemas.trip import TripPostRequest
+from app.schemas.trip import TripPatchRequest, TripPostRequest
 from app.models import TripModel
 
 
@@ -21,7 +23,7 @@ class TripCrud:
             )
         return item
     
-    async def create_trip(self, request_body: TripPostRequest):
+    async def create_trip(self, request_body: TripPostRequest) -> TripModel:
         item = TripModel.create(
             id=request_body.id,
             start_time=request_body.start_time,
@@ -30,6 +32,14 @@ class TripCrud:
             x_stop=request_body.x_stop,
             y_stop=request_body.y_stop,
         )
+        await self.save(item)
+        return item
+    
+    async def update_trip(
+        self, id_: str, request_body: TripPatchRequest
+    ) -> TripModel:
+        item = await self.get_by_id(id_)
+        item.end_time = request_body.end_time or datetime.now(tz=timezone.utc)
         await self.save(item)
         return item
 

@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
-class TripGetRequest(BaseModel):
+class TripGetResponse(BaseModel):
     id: str
     start_time: datetime
     end_time: datetime | None = None
@@ -24,3 +24,11 @@ class TripPostRequest(BaseModel):
 
 class TripPostResponse(BaseModel):
     id: str
+
+
+class TripPatchRequest(BaseModel):
+    end_time: datetime | None = None
+
+
+class TripPatchResponse(TripPostResponse):
+    ...
