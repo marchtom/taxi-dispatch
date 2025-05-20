@@ -83,7 +83,7 @@ add-taxi: ## Start single taxi container
 
 add-taxi-d: ## Start single detached taxi container
 	@printf "$(COLOR_GREEN)\nStarting new TAXI container (detached)$(COLOR_DEFAULT)\n\n"
-	@docker run --rm \
+	@docker run --rm -d \
 		--network $(DOCKER_NETWORK) \
 		-e DISPATCH_URL=http://dispatch:8080 \
 		--name taxi-$(shell uuidgen | cut -c1-8) \
