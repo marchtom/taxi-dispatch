@@ -1,5 +1,4 @@
 import logging
-import os
 from typing import AsyncGenerator
 
 from alembic import command as alembic_command
@@ -8,23 +7,20 @@ from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
+from app.config import settings
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-POSTGRES_USER = os.environ["POSTGRES_USER"]
-POSTGRES_PASSWORD = os.environ["POSTGRES_PASSWORD"]
-POSTGRES_HOST = os.environ["POSTGRES_HOST"]
-POSTGRES_DB = os.environ["POSTGRES_DB"]
-
 DATABASE_URL = URL.create(
     drivername="postgresql+asyncpg",
-    username=POSTGRES_USER,
-    password=POSTGRES_PASSWORD,
-    host=POSTGRES_HOST,
+    username=settings.postgres_user,
+    password=settings.postgres_password,
+    host=settings.postgres_host,
     port=5432,
-    database=POSTGRES_DB,
+    database=settings.postgres_db,
 )
 
 

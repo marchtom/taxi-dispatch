@@ -1,4 +1,3 @@
-import os
 import pathlib
 from unittest.mock import AsyncMock
 
@@ -21,9 +20,7 @@ from app.services import TaxiService
 def apply_migrations():
     base_dir = pathlib.Path(__file__).resolve().parent.parent
     path_to_cfg = str(base_dir / "alembic.ini")
-
     alembic_cfg = Config(path_to_cfg)
-    alembic_cfg.set_main_option("sqlalchemy.url", DATABASE_URL.replace("+asyncpg", ""))
 
     alembic_upgrade(alembic_cfg, "head")
 

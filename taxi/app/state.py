@@ -5,6 +5,7 @@ import random
 
 import httpx
 
+from app.config import settings
 from app.schemas.trip import TripPostRequest
 
 
@@ -25,8 +26,8 @@ class TaxiState:
         self.x = x
         self.y = y
 
-        self._speed_lower_boundary = 1
-        self._speed_upper_boundary = 3
+        self._speed_lower_boundary = settings.speed_min
+        self._speed_upper_boundary = settings.speed_max
 
         self._taxi_id = None
         self._trip_id = None
