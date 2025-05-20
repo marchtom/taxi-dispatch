@@ -11,13 +11,10 @@ from httpx import AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 
-from app.db import Base, get_db
+from app.db import Base, get_db, DATABASE_URL
 from app.dependencies import get_taxi_service
 from app.main import app
 from app.services import TaxiService
-
-
-DATABASE_URL = os.environ["DATABASE_URL"]
 
 
 @pytest.fixture(scope="session")

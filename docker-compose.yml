@@ -2,15 +2,13 @@ services:
   postgres:
     container_name: postgres
     image: postgres:latest
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=testdb
     ports:
       - "5432:5432"
     restart: always
     networks:
       - taxi_net
+    env_file:
+      - .env
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -25,13 +23,15 @@ services:
     image: dispatch:latest
     container_name: dispatch
     environment:
-      DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres:5432/testdb
+      POSTGRES_HOST: "postgres"
     volumes:
       - ./dispatch/alembic:/app/alembic:rw
     ports:
       - "8080:8080"
     networks:
       - taxi_net
+    env_file:
+      - .env
     depends_on:
       postgres:
         condition: service_healthy
@@ -45,6 +45,8 @@ services:
       - taxi_net
     environment:
       DISPATCH_URL: http://dispatch:8080
+    env_file:
+      - .env
     depends_on:
       - dispatch
 

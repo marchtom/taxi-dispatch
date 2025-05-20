@@ -4,6 +4,7 @@ from typing import AsyncGenerator
 
 from alembic import command as alembic_command
 from alembic.config import Config
+from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
@@ -12,7 +13,20 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-DATABASE_URL = os.environ["DATABASE_URL"]
+POSTGRES_USER = os.environ["POSTGRES_USER"]
+POSTGRES_PASSWORD = os.environ["POSTGRES_PASSWORD"]
+POSTGRES_HOST = os.environ["POSTGRES_HOST"]
+POSTGRES_DB = os.environ["POSTGRES_DB"]
+
+DATABASE_URL = URL.create(
+    drivername="postgresql+asyncpg",
+    username=POSTGRES_USER,
+    password=POSTGRES_PASSWORD,
+    host=POSTGRES_HOST,
+    port=5432,
+    database=POSTGRES_DB,
+)
+
 
 engine = create_async_engine(DATABASE_URL, echo=True)
 SessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
