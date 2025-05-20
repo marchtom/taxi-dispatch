@@ -30,7 +30,6 @@ class TaxiState:
         self._speed_upper_boundary = settings.speed_max
 
         self._taxi_id = None
-        self._trip_id = None
 
     @property
     def taxi_id(self) -> str:
