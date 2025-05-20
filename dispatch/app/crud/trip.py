@@ -66,3 +66,8 @@ class TripCrud:
         item = await self.get_by_id(id_)
         item.end_time = end_time or datetime.now(tz=timezone.utc)
         await self.save(item)
+
+    async def assign_taxi(self, trip_id: str, taxi_id: str) -> None:
+        item = await self.get_by_id(trip_id)
+        item.taxi_id = taxi_id
+        await self.save(item)

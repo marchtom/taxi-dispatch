@@ -22,6 +22,7 @@ class TaxiCrud:
         result = await self.session.execute(query)
         item: TaxiModel | None = result.scalars().first()
         if not item:
+            # TODO: Create custom Error for missing items
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"Taxi.ID: `{id_}` not found.",
@@ -68,10 +69,6 @@ class TaxiCrud:
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail="We are sorry, all the taxies are busy at the moment.",
             )
-        # assign taxi to trip
-        # TODO: move this to trip crud
-        trip.taxi = item
-        await self.save(trip)
 
         return item
 

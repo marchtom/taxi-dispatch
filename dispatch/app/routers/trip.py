@@ -37,8 +37,10 @@ async def create_trip(
     taxi_service: TaxiServiceDep,
 ) -> TripPostResponse:
     # TODO: add retry logic
+    # TODO: Part2, refactor this mess
     trip_item = await crud.create_trip(request_body)
     taxi_item = await crud_taxi.find_available(trip_item)
+    await crud.assign_taxi(trip_id=trip_item.id, taxi_id=taxi_item.id)
     await taxi_service.order_trip(trip=trip_item, taxi=taxi_item)
 
     return trip_item
