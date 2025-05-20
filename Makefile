@@ -91,3 +91,16 @@ add-taxi-d: ## Start single detached taxi container
 		--name taxi-$(shell uuidgen | cut -c1-8) \
 		taxi:latest
 .PHONY: add-taxi-d
+
+add-taxis: ## Start multiple detached TAXI containers
+	@read -p "How many TAXI containers do you want to start? " count; \
+	for i in $$(seq 1 $$count); do \
+		name=taxi-$$(uuidgen | cut -c1-8); \
+		echo "Starting $$name..."; \
+		docker run --rm -d \
+			--network $(DOCKER_NETWORK) \
+			-e DISPATCH_URL=http://dispatch:8080 \
+			--name $$name \
+			taxi:latest; \
+	done
+.PHONY: add-taxis
