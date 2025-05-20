@@ -15,7 +15,7 @@ class TripGetResponse(BaseModel):
 
 
 class TripPostRequest(BaseModel):
-    id: str
+    id: str | None = None
     start_time: datetime | None = None
     x_start: Annotated[int, Field(ge=1, le=100)]
     y_start: Annotated[int, Field(ge=1, le=100)]
