@@ -53,6 +53,7 @@ class TripCrud:
             .where(TripModel.taxi_id == taxi_id)
             .where(TripModel.end_time.is_(None))
         )
+        # TODO: add logic for handling multiple "open" trips for the same taxi
         result = await self.session.execute(query)
         item: TripModel | None = result.scalars().first()
         if not item:
@@ -70,4 +71,9 @@ class TripCrud:
     async def assign_taxi(self, trip_id: str, taxi_id: str) -> None:
         item = await self.get_by_id(trip_id)
         item.taxi_id = taxi_id
+        await self.save(item)
+
+    async def register_pickup(self, taxi_id: str) -> None:
+        item = await self.get_ongoing_by_taxi_id(taxi_id)
+        item.pickup_time = datetime.now(tz=timezone.utc)
         await self.save(item)

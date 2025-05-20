@@ -19,6 +19,10 @@ class Trip(Base):
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
     )
+    pickup_time: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
     end_time: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=True,

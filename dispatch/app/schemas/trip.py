@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 class TripGetResponse(BaseModel):
     id: str
     start_time: datetime
+    pickup_time: datetime | None = None
     end_time: datetime | None = None
     x_start: int
     y_start: int

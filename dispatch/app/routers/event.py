@@ -23,8 +23,10 @@ router = APIRouter(
 )
 async def trip_event(
     request_body: EventPostRequest,
+    crud_trip: TripCrudDep,
 ) -> EventPostResponse:
     logger.info(f"Client picked up by: {request_body.taxi_id}")
+    await crud_trip.register_pickup(taxi_id=request_body.taxi_id)
     return EventPostResponse(message="ok")
 
 
