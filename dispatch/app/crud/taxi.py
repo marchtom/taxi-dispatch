@@ -1,11 +1,11 @@
 import typing as t
 
-from fastapi import HTTPException
-from sqlalchemy import select
+from fastapi import HTTPException, status
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.schemas.taxi import TaxiPostRequest
-from app.models import TaxiModel
+from app.models import TaxiModel, TripModel
 
 
 class TaxiCrud:
@@ -23,12 +23,12 @@ class TaxiCrud:
         item: TaxiModel | None = result.scalars().first()
         if not item:
             raise HTTPException(
-                status_code=404,
+                status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"Taxi.ID: `{id_}` not found.",
             )
         return item
     
-    async def create_taxi(self, request_body: TaxiPostRequest):
+    async def create_taxi(self, request_body: TaxiPostRequest) -> TaxiModel:
         item = TaxiModel.create(
             id=request_body.id,
             callback_url=request_body.callback_url,
@@ -39,6 +39,38 @@ class TaxiCrud:
         await self.save(item)
         return item
 
-    async def save(self, entity: TaxiModel) -> None:
+    async def save(self, entity: TaxiModel | TripModel) -> None:
         self.session.add(entity)
-        await self.session.flush()
+        await self.session.commit()
+
+    async def find_available(self, trip: TripModel) -> TaxiModel:
+        """Finds the most suitable taxi for the trip."""
+        manhattan_dist = (
+            func.abs(TaxiModel.x - trip.x_start) + func.abs(TaxiModel.y - trip.y_start)
+        )
+
+        query = (
+            select(TaxiModel)
+            .where(TaxiModel.available.is_(True))
+            .order_by(manhattan_dist)
+            .limit(1)
+        )
+        result = await self.session.execute(query)
+        item: TaxiModel | None = result.scalars().first()
+        if not item:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="We are sorry, all the taxies are busy at the moment.",
+            )
+        # assign taxi to trip
+        trip.taxi = item
+        await self.save(trip)
+
+        return item
+
+    async def update_status(self, id_: str, new_x: int, new_y: int) -> None:
+        item = await self.get_by_id(id_)
+        item.available = True
+        item.x = new_x
+        item.y = new_y
+        await self.save(item)

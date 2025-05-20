@@ -1,5 +1,6 @@
 import os
 import pathlib
+from unittest.mock import AsyncMock
 
 import httpx
 import pytest
@@ -10,8 +11,10 @@ from httpx import AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 
-from app.main import app
 from app.db import Base, get_db
+from app.dependencies import get_taxi_service
+from app.main import app
+from app.services import TaxiService
 
 
 DATABASE_URL = os.environ["DATABASE_URL"]
@@ -40,6 +43,20 @@ async def db_session(apply_migrations):
             await session.execute(text(f'TRUNCATE TABLE "{table.name}" RESTART IDENTITY CASCADE;'))
 
         await session.commit()
+
+
+@pytest.fixture
+def mock_taxi_service(monkeypatch):
+    mock = AsyncMock(spec=TaxiService)
+    monkeypatch.setattr("app.dependencies.get_taxi_service", lambda: mock)
+    app.dependency_overrides[get_taxi_service] = lambda: mock
+    return mock
+
+
+@pytest.fixture(autouse=True)
+def clear_dependency_overrides():
+    yield
+    app.dependency_overrides.clear()
 
 
 @pytest_asyncio.fixture

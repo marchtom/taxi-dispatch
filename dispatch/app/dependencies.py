@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud import TaxiCrud, TripCrud
 from app.db import get_db
+from app.services import TaxiService
 
 
 async def get_taxi_crud(
@@ -19,5 +20,11 @@ async def get_trip_crud(
     return TripCrud(session)
 
 
+async def get_taxi_service() -> TaxiService:
+    return TaxiService()
+
+
 TaxiCrudDep = Annotated[TaxiCrud, Depends(get_taxi_crud)]
 TripCrudDep = Annotated[TripCrud, Depends(get_trip_crud)]
+
+TaxiServiceDep = Annotated[TaxiService, Depends(get_taxi_service)]

@@ -1,9 +1,10 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, Index
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import DateTime, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db import Base
+from app.models import TaxiModel
 
 
 class Trip(Base):
@@ -22,6 +23,15 @@ class Trip(Base):
     y_start: Mapped[int] = mapped_column()
     x_stop: Mapped[int] = mapped_column()
     y_stop: Mapped[int] = mapped_column()
+    taxi_id: Mapped[str] = mapped_column(
+        ForeignKey("taxi.id"),
+        nullable=True,
+    )
+
+    taxi: Mapped[TaxiModel] = relationship(
+        "Taxi",
+        foreign_keys=[taxi_id],
+    )
 
     @classmethod
     def create(
@@ -32,6 +42,7 @@ class Trip(Base):
         x_stop: int,
         y_stop: int,
         start_time: datetime | None = None,
+        taxi_id: str | None = None,
     ) -> "Trip":
         kwargs = {
             "id": id,
@@ -40,5 +51,6 @@ class Trip(Base):
             "y_start": y_start,
             "x_stop": x_stop,
             "y_stop": y_stop,
+            "taxi_id": taxi_id,
         }
         return cls(**kwargs)

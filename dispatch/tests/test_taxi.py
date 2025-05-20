@@ -1,6 +1,10 @@
+from copy import deepcopy
+
 import pytest
 
 from app.models import TaxiModel
+
+from .test_data import taxi
 
 
 @pytest.mark.asyncio
@@ -15,13 +19,7 @@ async def test_taxi_get_single(
         db_session,
         client,
     ):
-    expected_item = {
-        "id": "test-taxi-id-1",
-        "callback_url": "http://callback-1.url",
-        "available": True,
-        "x": 1,
-        "y": 50,
-    }
+    expected_item = deepcopy(taxi.taxi_1)
     entity = TaxiModel.create(**expected_item)
     db_session.add(entity)
     await db_session.flush()
@@ -56,6 +54,4 @@ async def test_taxi_create(client):
 
     resp_get = await client.get(f"/taxi/{payload['id']}")
     assert resp_get.status_code == 200
-    assert resp_get.json() == {
-        "available": True, "callback_url": "http://callback.url", "id": "id-1", "x": 20, "y": 42
-    }
+    assert resp_get.json() == payload

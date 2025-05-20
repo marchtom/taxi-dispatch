@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.dependencies import TripCrudDep
+from app.dependencies import TaxiCrudDep, TaxiServiceDep, TripCrudDep
 from app.schemas.trip import (
     TripGetResponse,
     TripPatchRequest,
@@ -33,8 +33,15 @@ async def get_trip(id_: str, crud: TripCrudDep) -> TripGetResponse:
 async def create_trip(
     request_body: TripPostRequest,
     crud: TripCrudDep,
+    crud_taxi: TaxiCrudDep,
+    taxi_service: TaxiServiceDep,
 ) -> TripPostResponse:
-    return await crud.create_trip(request_body)
+    # TODO: add retry logic
+    trip_item = await crud.create_trip(request_body)
+    taxi_item = await crud_taxi.find_available(trip_item)
+    await taxi_service.order_trip(trip=trip_item, taxi=taxi_item)
+
+    return trip_item
 
 
 @router.patch(

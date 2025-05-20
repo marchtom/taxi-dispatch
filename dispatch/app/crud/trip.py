@@ -34,7 +34,7 @@ class TripCrud:
         )
         await self.save(item)
         return item
-    
+
     async def update_trip(
         self, id_: str, request_body: TripPatchRequest
     ) -> TripModel:
@@ -45,4 +45,24 @@ class TripCrud:
 
     async def save(self, entity: TripModel) -> None:
         self.session.add(entity)
-        await self.session.flush()
+        await self.session.commit()
+
+    async def get_ongoing_by_taxi_id(self, taxi_id: str) -> TripModel:
+        query = (
+            select(TripModel)
+            .where(TripModel.taxi_id == taxi_id)
+            .where(TripModel.end_time.is_(None))
+        )
+        result = await self.session.execute(query)
+        item: TripModel | None = result.scalars().first()
+        if not item:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Active trips for Taxi.ID: `{taxi_id}` not found.",
+            )
+        return item
+
+    async def finalize_trip(self, id_: str, end_time: datetime | None = None) -> None:
+        item = await self.get_by_id(id_)
+        item.end_time = end_time or datetime.now(tz=timezone.utc)
+        await self.save(item)
