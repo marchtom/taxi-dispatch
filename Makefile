@@ -69,9 +69,11 @@ tests-taxi: ## Run taxi tests
 
 migrate: ## Run database migration
 	@$(DOCKER_COMPOSE) run --rm dispatch poetry --quiet run alembic upgrade head
+.PHONY: migrate
 
 create-migration: ## Autogenerate database migration
 	@$(DOCKER_COMPOSE) run --rm dispatch poetry --quiet run alembic revision --autogenerate -m "$(m)" --rev-id "$(id)"
+.PHONY: create-migration
 
 add-taxi: ## Start single taxi container
 	docker run --rm \
