@@ -4,7 +4,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.schemas.taxi import TaxiPostRequest
+from app.schemas.taxi import TaxiPostRequest, TaxiPatchRequest
 from app.models import TaxiModel, TripModel
 
 
@@ -27,7 +27,7 @@ class TaxiCrud:
                 detail=f"Taxi.ID: `{id_}` not found.",
             )
         return item
-    
+
     async def create_taxi(self, request_body: TaxiPostRequest) -> TaxiModel:
         item = TaxiModel.create(
             id=request_body.id,
@@ -39,6 +39,12 @@ class TaxiCrud:
         await self.save(item)
         return item
 
+    async def update_taxi(self, id_: str, request_body: TaxiPatchRequest) -> None:
+        item = await self.get_by_id(id_)
+        item.available = request_body.available
+        await self.save(item)
+
+    # TODO: create BaseCrud and move self.save() there
     async def save(self, entity: TaxiModel | TripModel) -> None:
         self.session.add(entity)
         await self.session.commit()
@@ -63,6 +69,7 @@ class TaxiCrud:
                 detail="We are sorry, all the taxies are busy at the moment.",
             )
         # assign taxi to trip
+        # TODO: move this to trip crud
         trip.taxi = item
         await self.save(trip)
 

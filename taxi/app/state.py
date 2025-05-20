@@ -59,13 +59,24 @@ class TaxiState:
     def randomize_state(self, seed: int | None = None) -> None:
         random.seed(seed)
 
-        self.x = random.uniform(1, 100)
-        self.y = random.uniform(1, 100)
+        self.x = random.randint(1, 100)
+        self.y = random.randint(1, 100)
 
-        self.available = True # random.choice(True, False)
-        # if taxi is busy it should travel to random location
+        self.available = random.choice([True, False])
+
+        if not self.available:
+            delay = random.uniform(5, 30)
+            logger.info(
+                f"Taxi will be available in: {delay:.1f} s"
+            )
+            asyncio.create_task(self._delayed_mark_available(delay))
 
         random.seed(None)
+
+    async def _delayed_mark_available(self, delay: float) -> None:
+        await asyncio.sleep(delay)
+        self.mark_available()
+        await self.notify_dispatch_availability_change(available=True)
 
     def mark_busy(self) -> None:
         self._available = False
@@ -129,6 +140,19 @@ class TaxiState:
             except httpx.HTTPError as e:
                 logger.error(
                     f"Failed to notify Dispatch about drop off: {e}",
+                    exc_info=True,
+                )
+
+    async def notify_dispatch_availability_change(self, available: bool) -> None:
+        async with httpx.AsyncClient() as client:
+            try:
+                await client.patch(
+                    f"{DISPATCH_URL}/taxi/{self.taxi_id}",
+                    json={"available": available},
+                )
+            except httpx.HTTPError as e:
+                logger.error(
+                    f"Failed to notify Dispatch about change: {e}",
                     exc_info=True,
                 )
 

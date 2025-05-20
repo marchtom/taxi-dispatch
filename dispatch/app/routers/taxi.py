@@ -1,7 +1,13 @@
 from fastapi import APIRouter
 
 from app.dependencies import TaxiCrudDep
-from app.schemas.taxi import TaxiPostRequest, TaxiPostResponse, TaxiGetRequest
+from app.schemas.taxi import (
+    TaxiGetRequest,
+    TaxiPatchRequest,
+    TaxiPatchResponse,
+    TaxiPostRequest,
+    TaxiPostResponse,
+)
 
 
 router = APIRouter(
@@ -38,3 +44,17 @@ async def create_taxi(
     crud: TaxiCrudDep,
 ) -> TaxiPostResponse:
     return await crud.create_taxi(request_body)
+
+
+@router.patch(
+    r"/{id_}",
+    response_model=TaxiPatchResponse,
+    description="Taxi status update"
+)
+async def create_taxi(
+    id_: str,
+    request_body: TaxiPatchRequest,
+    crud: TaxiCrudDep,
+) -> TaxiPatchResponse:
+    await crud.update_taxi(id_, request_body)
+    return TaxiPatchResponse(message="ok")

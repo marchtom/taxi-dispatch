@@ -3,6 +3,10 @@ from typing import Annotated
 from pydantic import BaseModel, Field
 
 
+class TaxiBasicResponse(BaseModel):
+    message: str
+
+
 class TaxiGetRequest(BaseModel):
     id: str
     callback_url: str
@@ -23,5 +27,13 @@ class TaxiPostResponse(BaseModel):
     id: str
 
 
-class TaxiNotifyMessage(BaseModel):
-    message: str
+class TaxiNotifyMessage(TaxiBasicResponse):
+    ...
+
+
+class TaxiPatchRequest(BaseModel):
+    available: bool
+
+
+class TaxiPatchResponse(TaxiBasicResponse):
+    ...

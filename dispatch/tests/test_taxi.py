@@ -16,9 +16,9 @@ async def test_taxi_get_list_none(client):
 
 @pytest.mark.asyncio
 async def test_taxi_get_single(
-        db_session,
-        client,
-    ):
+    db_session,
+    client,
+):
     expected_item = deepcopy(taxi.taxi_1)
     entity = TaxiModel.create(**expected_item)
     db_session.add(entity)
@@ -55,3 +55,25 @@ async def test_taxi_create(client):
     resp_get = await client.get(f"/taxi/{payload['id']}")
     assert resp_get.status_code == 200
     assert resp_get.json() == payload
+
+
+@pytest.mark.asyncio
+async def test_taxi_patch(
+    db_session,
+    client,
+):
+    expected_item = deepcopy(taxi.taxi_1)
+    expected_item["available"] = False
+    entity = TaxiModel.create(**expected_item)
+    db_session.add(entity)
+    await db_session.flush()
+
+    resp = await client.patch(
+        f"/taxi/{entity.id}",
+        json={"available": True}
+    )
+    assert resp.status_code == 200
+
+    resp_get = await client.get(f"/taxi/{entity.id}")
+    assert resp_get.status_code == 200
+    assert resp_get.json()["available"] is True

@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import socket
+import uuid
 from contextlib import asynccontextmanager
 from urllib.parse import urljoin
 
@@ -17,19 +18,25 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    # TODO: extract Taxi Registration login into separate function
     await asyncio.sleep(5)
+    await initialize_taxi()
+    yield
+    # TODO: Add teardown call to dispatch here
+
+
+async def initialize_taxi() -> None:
     logger.info("Sending register signal to Dispatch")
     taxi_state = get_taxi_state()
 
-    taxi_id = socket.gethostname()
-    callback_url = f"http://{taxi_id}:8081"
-    taxi_state.taxi_id = taxi_id
+    taxi_url = socket.gethostname()
+    callback_url = f"http://{taxi_url}:8081"
+    taxi_state.taxi_id = str(uuid.uuid4())
+    taxi_state.randomize_state()
 
     data = {
-        "id": taxi_id,
+        "id": taxi_state.taxi_id,
         "callback_url": callback_url,
-        "available": True,
+        "available": taxi_state.available,
         "x": taxi_state.x,
         "y": taxi_state.y,
     }
@@ -43,5 +50,3 @@ async def lifespan(_: FastAPI):
             logger.info(f"TAXI Register OK {response.json()}")
         except Exception as e:
             logger.error("Taxi Register Error:", e)
-    yield
-    # TODO: Add teardown call to dispatch here
