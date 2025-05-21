@@ -1,7 +1,7 @@
 import asyncio
 import logging
-import os
 import random
+from urllib.parse import urljoin
 
 import httpx
 
@@ -12,7 +12,7 @@ from app.schemas.trip import TripPostRequest
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-DISPATCH_URL = os.environ["DISPATCH_URL"]
+DISPATCH_URL = str(settings.dispatch_url)
 
 
 class TaxiState:
@@ -76,7 +76,7 @@ class TaxiState:
     async def _delayed_mark_available(self, delay: float) -> None:
         await asyncio.sleep(delay)
         self.mark_available()
-        await self.notify_dispatch_availability_change(available=True)
+        await self.notify_dispatch_availability_change(True)
 
     def mark_busy(self) -> None:
         self._available = False
@@ -117,44 +117,39 @@ class TaxiState:
 
         self.mark_available()
 
-    async def notify_dispatch_picked(self) -> None:
+    async def _notify_dispatch(self, uri: str, payload: dict) -> None:
         async with httpx.AsyncClient() as client:
             try:
                 await client.post(
-                    f"{DISPATCH_URL}/event/picked",
-                    json={"taxi_id": self.taxi_id},
+                    urljoin(DISPATCH_URL, uri),
+                    json=payload,
                 )
             except httpx.HTTPError as e:
                 logger.error(
-                    f"Failed to notify Dispatch about pick up: {e}",
+                    f"Failed to notify Dispatch: {e}",
                     exc_info=True,
                 )
+
+    async def notify_dispatch_picked(self) -> None:
+        await self._notify_dispatch(
+            uri="/event/picked",
+            payload={"taxi_id": self.taxi_id},
+        )
+
 
     async def notify_dispatch_dropped(self) -> None:
-        async with httpx.AsyncClient() as client:
-            try:
-                await client.post(
-                    f"{DISPATCH_URL}/event/dropped",
-                    json={"taxi_id": self.taxi_id},
-                )
-            except httpx.HTTPError as e:
-                logger.error(
-                    f"Failed to notify Dispatch about drop off: {e}",
-                    exc_info=True,
-                )
+        await self._notify_dispatch(
+            "/event/dropped",
+            payload={"taxi_id": self.taxi_id},
+        )
+
 
     async def notify_dispatch_availability_change(self, available: bool) -> None:
-        async with httpx.AsyncClient() as client:
-            try:
-                await client.patch(
-                    f"{DISPATCH_URL}/taxi/{self.taxi_id}",
-                    json={"available": available},
-                )
-            except httpx.HTTPError as e:
-                logger.error(
-                    f"Failed to notify Dispatch about change: {e}",
-                    exc_info=True,
-                )
+        await self._notify_dispatch(
+            f"/taxi/{self.taxi_id}",
+            payload={"available": available},
+        )
+
 
 
 _TAXI_STATE = TaxiState()
