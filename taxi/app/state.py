@@ -156,7 +156,6 @@ class TaxiState:
         )
 
 
-
 _TAXI_STATE = TaxiState()
 
 
