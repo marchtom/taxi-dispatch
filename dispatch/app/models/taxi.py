@@ -2,8 +2,10 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db import Base
 
+from .mixins import CreatedAtMixin
 
-class Taxi(Base):
+
+class Taxi(Base, CreatedAtMixin):
     __tablename__ = "taxi"
 
     id: Mapped[str] = mapped_column(primary_key=True)
