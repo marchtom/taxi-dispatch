@@ -51,7 +51,7 @@ async def create_taxi(
     response_model=TaxiPatchResponse,
     description="Taxi status update"
 )
-async def create_taxi(
+async def update_taxi(
     id_: str,
     request_body: TaxiPatchRequest,
     crud: TaxiCrudDep,

@@ -117,13 +117,15 @@ class TaxiState:
 
         self.mark_available()
 
-    async def _notify_dispatch(self, uri: str, payload: dict) -> None:
+    async def _notify_dispatch(self, method: str, uri: str, payload: dict) -> None:
         async with httpx.AsyncClient() as client:
             try:
-                await client.post(
-                    urljoin(DISPATCH_URL, uri),
+                request = client.build_request(
+                    method=method,
+                    url=urljoin(DISPATCH_URL, uri),
                     json=payload,
                 )
+                await client.send(request=request)
             except httpx.HTTPError as e:
                 logger.error(
                     f"Failed to notify Dispatch: {e}",
@@ -132,6 +134,7 @@ class TaxiState:
 
     async def notify_dispatch_picked(self) -> None:
         await self._notify_dispatch(
+            method="POST",
             uri="/event/picked",
             payload={"taxi_id": self.taxi_id},
         )
@@ -139,14 +142,16 @@ class TaxiState:
 
     async def notify_dispatch_dropped(self) -> None:
         await self._notify_dispatch(
-            "/event/dropped",
+            method="POST",
+            uri="/event/dropped",
             payload={"taxi_id": self.taxi_id},
         )
 
 
     async def notify_dispatch_availability_change(self, available: bool) -> None:
         await self._notify_dispatch(
-            f"/taxi/{self.taxi_id}",
+            method="PATCH",
+            uri=f"/taxi/{self.taxi_id}",
             payload={"available": available},
         )
 
