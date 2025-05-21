@@ -4,8 +4,8 @@ from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.schemas.trip import TripPatchRequest, TripPostRequest
 from app.models import TripModel
+from app.schemas.trip import TripPatchRequest, TripPostRequest
 
 
 class TripCrud:

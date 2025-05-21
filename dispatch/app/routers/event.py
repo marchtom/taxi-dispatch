@@ -5,7 +5,6 @@ from fastapi import APIRouter
 from app.dependencies import TaxiCrudDep, TripCrudDep
 from app.schemas.event import EventPostRequest, EventPostResponse
 
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -21,7 +20,7 @@ router = APIRouter(
     response_model=EventPostResponse,
     description="Notifies Dispatch about client pick up",
 )
-async def trip_event(
+async def trip_event_picked(
     request_body: EventPostRequest,
     crud_trip: TripCrudDep,
 ) -> EventPostResponse:
@@ -35,7 +34,7 @@ async def trip_event(
     response_model=EventPostResponse,
     description="Notifies Dispatch about client drop off",
 )
-async def trip_event(
+async def trip_event_dropped(
     request_body: EventPostRequest,
     crud_taxi: TaxiCrudDep,
     crud_trip: TripCrudDep,

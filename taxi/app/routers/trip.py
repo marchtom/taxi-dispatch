@@ -3,7 +3,7 @@ import asyncio
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.schemas.trip import TripPostRequest, TripPostResponse
-from app.state import get_taxi_state, TaxiState
+from app.state import TaxiState, get_taxi_state
 
 router = APIRouter(
     prefix="/trip",

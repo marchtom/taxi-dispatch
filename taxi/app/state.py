@@ -8,7 +8,6 @@ import httpx
 from app.config import settings
 from app.schemas.trip import TripPostRequest
 
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 

@@ -1,14 +1,13 @@
 import logging
 from typing import AsyncGenerator
 
-from alembic import command as alembic_command
-from alembic.config import Config
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import declarative_base, sessionmaker
 
+from alembic import command as alembic_command
+from alembic.config import Config
 from app.config import settings
-
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

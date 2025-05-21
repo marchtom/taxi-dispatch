@@ -4,8 +4,8 @@ from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.schemas.taxi import TaxiPostRequest, TaxiPatchRequest
 from app.models import TaxiModel, TripModel
+from app.schemas.taxi import TaxiPatchRequest, TaxiPostRequest
 
 
 class TaxiCrud:

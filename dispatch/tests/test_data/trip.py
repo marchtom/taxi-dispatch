@@ -1,6 +1,5 @@
 from datetime import datetime
 
-
 datetime_str = "2025-05-20T00:00:00+02:00"
 trip_1 = {
     "id": "1",

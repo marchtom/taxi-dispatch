@@ -1,8 +1,9 @@
+from unittest.mock import AsyncMock, patch
+from urllib.parse import urljoin
+
 import httpx
 import pytest
 import respx
-from unittest.mock import AsyncMock, patch
-from urllib.parse import urljoin
 
 from app.config import settings
 from app.schemas.trip import TripPostRequest

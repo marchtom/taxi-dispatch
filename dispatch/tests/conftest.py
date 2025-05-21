@@ -4,13 +4,13 @@ from unittest.mock import AsyncMock
 import httpx
 import pytest
 import pytest_asyncio
-from alembic.command import upgrade as alembic_upgrade
-from alembic.config import Config
 from httpx import AsyncClient
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from app.db import Base, get_db, DATABASE_URL
+from alembic.command import upgrade as alembic_upgrade
+from alembic.config import Config
+from app.db import DATABASE_URL, Base, get_db
 from app.dependencies import get_taxi_service
 from app.main import app
 from app.services import TaxiService

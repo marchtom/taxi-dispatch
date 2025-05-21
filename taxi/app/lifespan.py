@@ -11,7 +11,6 @@ from fastapi import FastAPI
 from app.config import settings
 from app.state import get_taxi_state
 
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 

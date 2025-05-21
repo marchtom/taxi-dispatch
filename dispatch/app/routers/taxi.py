@@ -9,7 +9,6 @@ from app.schemas.taxi import (
     TaxiPostResponse,
 )
 
-
 router = APIRouter(
     prefix="/taxi",
     tags=["taxi"],

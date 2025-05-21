@@ -9,7 +9,6 @@ from app.schemas.trip import (
     TripPostResponse,
 )
 
-
 router = APIRouter(
     prefix="/trip",
     tags=["trip"],
