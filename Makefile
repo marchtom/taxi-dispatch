@@ -86,10 +86,12 @@ lint: lint-dispatch lint-taxi ## Run ruff for both Dispatch and Taxi
 
 lint-dispatch: ## Run ruff linter for Dispatch
 	@$(DOCKER_COMPOSE) run --rm dispatch poetry --quiet run ruff check app
+	@$(DOCKER_COMPOSE) run --rm dispatch poetry --quiet run ruff format --check app
 .PHONY: lint-dispatch
 
 lint-taxi: ## Run ruff linter for Taxi
 	@$(DOCKER_COMPOSE) run --rm taxi poetry --quiet run ruff check app
+	@$(DOCKER_COMPOSE) run --rm taxi poetry --quiet run ruff format --check app
 .PHONY: lint-taxi
 
 typecheck: typecheck-dispatch typecheck-taxi ## Run mypy for both Dispatch and Taxi
