@@ -22,7 +22,7 @@ class TripCrud:
                 detail=f"Trip.ID: `{id_}` not found.",
             )
         return item
-    
+
     async def create_trip(self, request_body: TripPostRequest) -> TripModel:
         item = TripModel.create(
             id=request_body.id,
@@ -35,9 +35,7 @@ class TripCrud:
         await self.save(item)
         return item
 
-    async def update_trip(
-        self, id_: str, request_body: TripPatchRequest
-    ) -> TripModel:
+    async def update_trip(self, id_: str, request_body: TripPatchRequest) -> TripModel:
         item = await self.get_by_id(id_)
         item.end_time = request_body.end_time or datetime.now(tz=timezone.utc)
         await self.save(item)

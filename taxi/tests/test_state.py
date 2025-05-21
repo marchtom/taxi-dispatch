@@ -14,7 +14,7 @@ async def test_state_randomize_state_available():
     taxi_state = TaxiState()
 
     with patch.object(
-        taxi_state, '_delayed_mark_available', new_callable=AsyncMock
+        taxi_state, "_delayed_mark_available", new_callable=AsyncMock
     ) as mock_delayed:
         taxi_state.randomize_state(seed=42)
 
@@ -30,7 +30,7 @@ async def test_state_randomize_state_unavailable():
     taxi_state = TaxiState()
 
     with patch.object(
-        taxi_state, '_delayed_mark_available', new_callable=AsyncMock
+        taxi_state, "_delayed_mark_available", new_callable=AsyncMock
     ) as mock_delayed:
         taxi_state.randomize_state(seed=111)
 
@@ -59,13 +59,11 @@ async def test_state_handle_trip():
     )
     DISPATCH_URL = str(settings.dispatch_url)
 
-    route_picked = (
-        respx.post(urljoin(DISPATCH_URL, "/event/picked"))
-        .mock(httpx.Response(status_code=204))
+    route_picked = respx.post(urljoin(DISPATCH_URL, "/event/picked")).mock(
+        httpx.Response(status_code=204)
     )
-    route_dropped = (
-        respx.post(urljoin(DISPATCH_URL, "/event/dropped"))
-        .mock(httpx.Response(status_code=204))
+    route_dropped = respx.post(urljoin(DISPATCH_URL, "/event/dropped")).mock(
+        httpx.Response(status_code=204)
     )
 
     await taxi_state.handle_trip(trip_request)

@@ -27,13 +27,11 @@ class TaxiPostResponse(BaseModel):
     id: str
 
 
-class TaxiNotifyMessage(TaxiBasicResponse):
-    ...
+class TaxiNotifyMessage(TaxiBasicResponse): ...
 
 
 class TaxiPatchRequest(BaseModel):
     available: bool
 
 
-class TaxiPatchResponse(TaxiBasicResponse):
-    ...
+class TaxiPatchResponse(TaxiBasicResponse): ...

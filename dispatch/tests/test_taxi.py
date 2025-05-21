@@ -33,7 +33,7 @@ async def test_taxi_get_single(
 async def test_taxi_get_missing(client):
     resp = await client.get("/taxi/missing-id")
     assert resp.status_code == 404
-    assert resp.json() == {'detail': 'Taxi.ID: `missing-id` not found.'}
+    assert resp.json() == {"detail": "Taxi.ID: `missing-id` not found."}
 
 
 @pytest.mark.asyncio
@@ -68,10 +68,7 @@ async def test_taxi_patch(
     db_session.add(entity)
     await db_session.flush()
 
-    resp = await client.patch(
-        f"/taxi/{entity.id}",
-        json={"available": True}
-    )
+    resp = await client.patch(f"/taxi/{entity.id}", json={"available": True})
     assert resp.status_code == 200
 
     resp_get = await client.get(f"/taxi/{entity.id}")

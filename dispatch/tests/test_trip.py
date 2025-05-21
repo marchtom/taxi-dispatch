@@ -33,7 +33,7 @@ async def test_trip_get_single(
 async def test_trip_get_missing(client):
     resp = await client.get("/trip/missing-id")
     assert resp.status_code == 404
-    assert resp.json() == {'detail': 'Trip.ID: `missing-id` not found.'}
+    assert resp.json() == {"detail": "Trip.ID: `missing-id` not found."}
 
 
 @pytest.mark.asyncio
@@ -48,10 +48,7 @@ async def test_trip_create(
     await db_session.flush()
 
     # configure respx capture for taxi's callback_url
-    route = (
-        respx.post(taxi.taxi_1["callback_url"])
-        .mock(httpx.Response(status_code=204))
-    )
+    route = respx.post(taxi.taxi_1["callback_url"]).mock(httpx.Response(status_code=204))
 
     payload_trip = {
         "id": "trip-id-1",

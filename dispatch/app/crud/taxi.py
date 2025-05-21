@@ -11,7 +11,7 @@ from app.models import TaxiModel, TripModel
 class TaxiCrud:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
-    
+
     async def get_all(self) -> t.Sequence[TaxiModel] | None:
         results = await self.session.execute(select(TaxiModel))
         items: t.Sequence[TaxiModel] | None = results.scalars().all()
@@ -52,15 +52,10 @@ class TaxiCrud:
 
     async def find_available(self, trip: TripModel) -> TaxiModel:
         """Finds the most suitable taxi for the trip."""
-        manhattan_dist = (
-            func.abs(TaxiModel.x - trip.x_start) + func.abs(TaxiModel.y - trip.y_start)
-        )
+        manhattan_dist = func.abs(TaxiModel.x - trip.x_start) + func.abs(TaxiModel.y - trip.y_start)
 
         query = (
-            select(TaxiModel)
-            .where(TaxiModel.available.is_(True))
-            .order_by(manhattan_dist)
-            .limit(1)
+            select(TaxiModel).where(TaxiModel.available.is_(True)).order_by(manhattan_dist).limit(1)
         )
         result = await self.session.execute(query)
         item: TaxiModel | None = result.scalars().first()

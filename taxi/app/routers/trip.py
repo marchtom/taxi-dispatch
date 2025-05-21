@@ -10,6 +10,7 @@ router = APIRouter(
     tags=["trip"],
 )
 
+
 @router.post(
     "",
     response_model=TripPostResponse,

@@ -32,5 +32,4 @@ class TripPatchRequest(BaseModel):
     end_time: datetime | None = None
 
 
-class TripPatchResponse(TripPostResponse):
-    ...
+class TripPatchResponse(TripPostResponse): ...

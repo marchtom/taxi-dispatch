@@ -66,9 +66,7 @@ class TaxiState:
 
         if not self.available:
             delay = random.uniform(5, 30)
-            logger.info(
-                f"Taxi will be available in: {delay:.1f} s"
-            )
+            logger.info(f"Taxi will be available in: {delay:.1f} s")
             asyncio.create_task(self._delayed_mark_available(delay))
 
         random.seed(None)
@@ -139,14 +137,12 @@ class TaxiState:
             payload={"taxi_id": self.taxi_id},
         )
 
-
     async def notify_dispatch_dropped(self) -> None:
         await self._notify_dispatch(
             method="POST",
             uri="/event/dropped",
             payload={"taxi_id": self.taxi_id},
         )
-
 
     async def notify_dispatch_availability_change(self, available: bool) -> None:
         await self._notify_dispatch(

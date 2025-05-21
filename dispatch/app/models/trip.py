@@ -11,10 +11,7 @@ from app.models import TaxiModel
 class Trip(Base):
     __tablename__ = "trip"
 
-    id: Mapped[str] = mapped_column(
-        primary_key=True,
-        default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(primary_key=True, default=lambda: str(uuid.uuid4()))
     start_time: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),

@@ -17,7 +17,7 @@ async def test_taxi_is_busy_error(client_with_busy_taxi):
             "y_start": 20,
             "x_stop": 5,
             "y_stop": 99,
-        }
+        },
     )
     assert resp.status_code == 503
     assert resp.json() == {"detail": "Taxi is busy, try again later."}

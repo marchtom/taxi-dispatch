@@ -8,15 +8,11 @@ from app.db import get_db
 from app.services import TaxiService
 
 
-async def get_taxi_crud(
-    session: Annotated[AsyncSession, Depends(get_db)]
-) -> TaxiCrud:
+async def get_taxi_crud(session: Annotated[AsyncSession, Depends(get_db)]) -> TaxiCrud:
     return TaxiCrud(session)
 
 
-async def get_trip_crud(
-    session: Annotated[AsyncSession, Depends(get_db)]
-) -> TripCrud:
+async def get_trip_crud(session: Annotated[AsyncSession, Depends(get_db)]) -> TripCrud:
     return TripCrud(session)
 
 
