@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 DISPATCH_URL = os.environ["DISPATCH_URL"]
 INTERVAL_SECONDS = float(os.environ["INTERVAL_SECONDS"])
-REQUEST_BATCH_SIZE = int(os.getenv("INTERVAL_SECONDS", 1))
+REQUEST_BATCH_SIZE = int(os.getenv("REQUEST_BATCH_SIZE", 1))
 
 
 def generate_random_trip() -> dict:
