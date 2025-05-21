@@ -20,7 +20,7 @@ async def create_trip(
     taxi_state: TaxiState = Depends(get_taxi_state),
 ) -> TripPostResponse:
     if taxi_state.is_busy:
-        return HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Taxi is busy, try again later.",
         )
