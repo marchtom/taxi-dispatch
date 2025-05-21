@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "app"
+version = "0.1.0"
+description = "Traffic Generator"
+authors = ["Tomasz Marchlewski"]
+
+[tool.poetry.dependencies]
+python = "^3.12.10"
+httpx = "^0.28.0"
+python-dotenv = "^1.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -50,6 +50,20 @@ services:
     depends_on:
       - dispatch
 
+  traffic:
+    build:
+      context: ./traffic_generator
+    image: traffic:latest
+    container_name: traffic
+    networks:
+      - taxi_net
+    environment:
+      DISPATCH_URL: http://dispatch:8080
+    env_file:
+      - .env
+    depends_on:
+      - dispatch
+
 volumes:
   postgres_data:
 

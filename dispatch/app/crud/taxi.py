@@ -70,6 +70,11 @@ class TaxiCrud:
                 detail="We are sorry, all the taxies are busy at the moment.",
             )
 
+        # Book taxi for the trip
+        # TODO: find a way to revert it if trip fails to start
+        item.available = False
+        await self.save(item)
+
         return item
 
     async def update_status(self, id_: str, new_x: int, new_y: int) -> None:
