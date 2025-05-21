@@ -8,6 +8,13 @@ This repository contains a simulation of a taxi dispatch system composed of two 
 ## Requirements
 
 - Docker with Docker Compose
+- GNU Make
+
+## Make
+1. You can check available make commands:
+    ```
+    make
+    ```
 
 ## Setup
 
@@ -30,6 +37,11 @@ This repository contains a simulation of a taxi dispatch system composed of two 
 1. While dispatch service is running, you can access API documentation:
     `http://localhost:8080/docs`
 
+1. [Optional] You can check docker network status using:
+    ```bash
+    make status
+    ```
+
 ### Adding a Taxi Container
 
 1. You can manually add a taxi instance to the network:
@@ -44,6 +56,12 @@ This repository contains a simulation of a taxi dispatch system composed of two 
         make add-taxi-d
         ```
 
+1. If you wish to start multiple detached taxi containers run:
+    ```bash
+    make add-taxis
+    ```
+    Terminal prompt will ask you to specify number of containers.
+
 ## Stopping the Environment
 
 1. To stop all containers and remove associated volumes:
@@ -55,11 +73,24 @@ This repository contains a simulation of a taxi dispatch system composed of two 
 
 1. Run tests for all services:
     ```bash
-    make tests
+    make test
     ```
 
 1. Run tests for an individual service:
     ```bash
-    make tests-dispatch
-    make tests-taxi
+    make test-dispatch
+    make test-taxi
+    ```
+
+## Linting
+
+1. Run linting for all services:
+    ```bash
+    make lint
+    ```
+
+1. Run linting for an individual service:
+    ```bash
+    make lint-dispatch
+    make lint-taxi
     ```
