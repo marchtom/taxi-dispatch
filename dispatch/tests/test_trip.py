@@ -75,6 +75,7 @@ async def test_trip_create(
 
     resp_get = await client.get(f"/trip/{payload_trip['id']}")
     assert resp_get.status_code == 200
+    payload_trip["taxi_id"] = taxi_entity.id
     payload_trip["pickup_time"] = None
     payload_trip["end_time"] = None
     assert resp_get.json() == payload_trip
@@ -130,6 +131,7 @@ async def test_trip_update(
     datetime_str = deepcopy(trip.datetime_str)
     expected_item["start_time"] = datetime_str
     end_time = "2025-05-20T00:12:30Z"
+    expected_item["taxi_id"] = None
     expected_item["pickup_time"] = None
     expected_item["end_time"] = end_time
 
