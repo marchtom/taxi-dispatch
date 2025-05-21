@@ -46,7 +46,7 @@ class TaxiCrud:
         await self.save(item)
 
     # TODO: create BaseCrud and move self.save() there
-    async def save(self, entity: TaxiModel | TripModel) -> None:
+    async def save(self, entity: TaxiModel) -> None:
         self.session.add(entity)
         await self.session.commit()
 

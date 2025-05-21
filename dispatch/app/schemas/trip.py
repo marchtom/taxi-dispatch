@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 
 class TripGetResponse(BaseModel):
     id: str
+    taxi_id: str | None = None
     start_time: datetime
     pickup_time: datetime | None = None
     end_time: datetime | None = None

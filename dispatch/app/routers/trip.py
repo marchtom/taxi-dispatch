@@ -16,6 +16,15 @@ router = APIRouter(
 
 
 @router.get(
+    "",
+    response_model=list[TripGetResponse],
+    description="Get list of all trips",
+)
+async def list_trip(crud: TripCrudDep) -> list[TripGetResponse]:
+    return await crud.get_all()
+
+
+@router.get(
     r"/{id_}",
     response_model=TripGetResponse,
     description="Get info about a single trip",

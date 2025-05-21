@@ -10,6 +10,13 @@ from .test_data import taxi, trip
 
 
 @pytest.mark.asyncio
+async def test_trip_get_list_none(client):
+    resp = await client.get("/trip")
+    assert resp.status_code == 200
+    assert resp.json() == []
+
+
+@pytest.mark.asyncio
 async def test_trip_get_single(
     db_session,
     client,
@@ -19,6 +26,7 @@ async def test_trip_get_single(
     expected_item = deepcopy(trip.trip_1)
     entity = TripModel.create(**expected_item)
     expected_item["start_time"] = datetime_str
+    expected_item["taxi_id"] = None
     expected_item["pickup_time"] = None
     expected_item["end_time"] = None
     db_session.add(entity)

@@ -1,3 +1,4 @@
+import typing as t
 from datetime import datetime, timezone
 
 from fastapi import HTTPException
@@ -11,6 +12,11 @@ from app.schemas.trip import TripPatchRequest, TripPostRequest
 class TripCrud:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
+
+    async def get_all(self) -> t.Sequence[TripModel] | None:
+        results = await self.session.execute(select(TripModel))
+        items: t.Sequence[TripModel] | None = results.scalars().all()
+        return items
 
     async def get_by_id(self, id_: str) -> TripModel:
         query = select(TripModel).where(TripModel.id == id_)
