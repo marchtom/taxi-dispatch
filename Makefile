@@ -63,7 +63,7 @@ build-taxi: ## Build Taxi image
 .PHONY: build-taxi
 
 ##############################
-### TESTS
+### TESTS AND LINTING
 ##############################
 
 test: ## Run all tests (Dispatch + Taxi)
@@ -80,6 +80,28 @@ test-dispatch: ## Run Dispatch tests
 test-taxi: ## Run Taxi tests
 	@$(DOCKER_COMPOSE) run --rm --build taxi poetry --quiet run pytest -x -v --cov=app --cov-report=term-missing
 .PHONY: test-taxi
+
+lint: lint-dispatch lint-taxi ## Run ruff for both Dispatch and Taxi
+.PHONY: lint
+
+lint-dispatch: ## Run ruff linter for Dispatch
+	@$(DOCKER_COMPOSE) run --rm dispatch poetry --quiet run ruff check app
+.PHONY: lint-dispatch
+
+lint-taxi: ## Run ruff linter for Taxi
+	@$(DOCKER_COMPOSE) run --rm taxi poetry --quiet run ruff check app
+.PHONY: lint-taxi
+
+typecheck: typecheck-dispatch typecheck-taxi ## Run mypy for both Dispatch and Taxi
+.PHONY: typecheck
+
+typecheck-dispatch: ## Run mypy type check for Dispatch
+	@$(DOCKER_COMPOSE) run --rm dispatch poetry --quiet run mypy app
+.PHONY: typecheck-dispatch
+
+typecheck-taxi: ## Run mypy type check for Taxi
+	@$(DOCKER_COMPOSE) run --rm taxi poetry --quiet run mypy app
+.PHONY: typecheck-taxi
 
 ##############################
 ### DATABASE / MIGRATIONS
