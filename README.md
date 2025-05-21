@@ -32,7 +32,7 @@ This repository contains a simulation of a taxi dispatch system composed of two 
     ```bash
     make up
     ```
-    This will build the containers, wait for dependencies to become healthy, and start the services: PostgreSQL database, Dispatch and a single Taxi.
+    This will build the containers, wait for dependencies to become healthy, and start the services: PostgreSQL database, Dispatch, a single Taxi and Traffic Generator.
 
 1. While dispatch service is running, you can access API documentation:
     `http://localhost:8080/docs`
