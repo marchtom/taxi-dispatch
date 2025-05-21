@@ -1,18 +1,20 @@
 include .env
 export
 
-.DEFAULT_GOAL:=help
+.DEFAULT_GOAL := help
 
-# text colors and styles
-COLOR_DEFAULT:=\033[0m
-BOLD_TEXT:=\033[1m
-COLOR_RED:=\033[31m
-COLOR_GREEN:=\033[32m
-COLOR_YELLOW:=\033[33m
+# Text colors and styles
+COLOR_DEFAULT := \033[0m
+BOLD_TEXT := \033[1m
+COLOR_RED := \033[31m
+COLOR_GREEN := \033[32m
+COLOR_YELLOW := \033[33m
 
-# additional commands
 DOCKER_COMPOSE := docker compose -f docker-compose.yml
 
+##############################
+### HELP
+##############################
 
 help: ## Display available commands
 	@printf "$(COLOR_YELLOW)$(BOLD_TEXT)Available make commands:\n$(COLOR_DEFAULT)"
@@ -20,62 +22,84 @@ help: ## Display available commands
 	| awk 'BEGIN {FS = ":"}; {printf "$(COLOR_GREEN)%-20s$(COLOR_DEFAULT)%s\n", $$1, $$2}'
 .PHONY: help
 
-init: ## Initialize required components
+##############################
+### ENVIRONMENT / NETWORK
+##############################
+
+init: ## Initialize required Docker network
 	@docker network create $(DOCKER_NETWORK)
 .PHONY: init
 
-status: ## Checks status of required dependencies
+status: ## Check status of Docker network
 	@docker network ls --format '{{.Name}}' | grep -q "^$(DOCKER_NETWORK)$$" \
 		&& echo "$(COLOR_GREEN)[O]$(COLOR_DEFAULT) Network '$(DOCKER_NETWORK)' exists" \
 		|| echo "$(COLOR_RED)[X]$(COLOR_DEFAULT) Network '$(DOCKER_NETWORK)' does not exist. Run $(COLOR_GREEN)make init$(COLOR_DEFAULT)"
 .PHONY: status
 
-up: ## Start development environment using docker compose
+up: ## Start development environment using Docker Compose
 	@printf "$(COLOR_GREEN)\nStarting development environment$(COLOR_DEFAULT)\n\n"
 	$(DOCKER_COMPOSE) up --build
 .PHONY: up
  
-down: ## Stop development environment, removes orphans and volumes
+down: ## Stop development environment, remove orphans and volumes
 	@printf "$(COLOR_GREEN)\nStopping development environment$(COLOR_DEFAULT)\n\n"
 	$(DOCKER_COMPOSE) down --remove-orphans --volumes
 .PHONY: down
 
-build: ## Build taxi and dispatch image
+##############################
+### BUILD
+##############################
+
+build: ## Build all images
 	@$(MAKE) build-dispatch build-taxi
 .PHONY: build
 
-build-dispatch: ## Build dispatch image
+build-dispatch: ## Build Dispatch image
 	docker build -t dispatch ./dispatch
 .PHONY: build-dispatch
 
-build-taxi: ## Build taxi image
+build-taxi: ## Build Taxi image
 	docker build -t taxi ./taxi
 .PHONY: build-taxi
 
-tests: ## Run all tests
+##############################
+### TESTS
+##############################
+
+test: ## Run all tests (Dispatch + Taxi)
 	@printf "$(COLOR_GREEN)\nRunning tests for DISPATCH$(COLOR_DEFAULT)\n\n"
 	@$(DOCKER_COMPOSE) run --rm --build dispatch poetry --quiet run pytest -x --cov=app --cov-report=term-missing
 	@printf "$(COLOR_GREEN)\nRunning tests for TAXI$(COLOR_DEFAULT)\n\n"
-	@$(DOCKER_COMPOSE) run --rm  --build taxi poetry --quiet run pytest -x --cov=app --cov-report=term-missing
+	@$(DOCKER_COMPOSE) run --rm --build taxi poetry --quiet run pytest -x --cov=app --cov-report=term-missing
 .PHONY: test
 
-tests-dispatch: ## Run dispatch tests
+test-dispatch: ## Run Dispatch tests
 	@$(DOCKER_COMPOSE) run --rm --build dispatch poetry --quiet run pytest -x -v --cov=app --cov-report=term-missing
 .PHONY: test-dispatch
 
-tests-taxi: ## Run taxi tests
+test-taxi: ## Run Taxi tests
 	@$(DOCKER_COMPOSE) run --rm --build taxi poetry --quiet run pytest -x -v --cov=app --cov-report=term-missing
 .PHONY: test-taxi
 
-migrate: ## Run database migration
+##############################
+### DATABASE / MIGRATIONS
+##############################
+
+migrate: ## Run database migrations
 	@$(DOCKER_COMPOSE) run --rm dispatch poetry --quiet run alembic upgrade head
 .PHONY: migrate
 
-create-migration: ## Autogenerate database migration
-	@$(DOCKER_COMPOSE) run --rm dispatch poetry --quiet run alembic revision --autogenerate -m "$(m)" --rev-id "$(id)"
+create-migration: ## Create database migration
+	@read -p "Specify migration message (-m) " msg; \
+	read -p "New Revision ID (--rev-id) " id; \
+	$(DOCKER_COMPOSE) run --rm dispatch poetry --quiet run alembic revision --autogenerate -m "$$msg" --rev-id "$$id"
 .PHONY: create-migration
 
-add-taxi: ## Start single taxi container
+##############################
+### TAXI MANAGEMENT
+##############################
+
+add-taxi: ## Start a single Taxi container
 	docker run --rm \
 		--network $(DOCKER_NETWORK) \
 		-e DISPATCH_URL=http://dispatch:8080 \
@@ -83,7 +107,7 @@ add-taxi: ## Start single taxi container
 		taxi:latest
 .PHONY: add-taxi
 
-add-taxi-d: ## Start single detached taxi container
+add-taxi-d: ## Start a single Taxi container (detached)
 	@printf "$(COLOR_GREEN)\nStarting new TAXI container (detached)$(COLOR_DEFAULT)\n\n"
 	@docker run --rm -d \
 		--network $(DOCKER_NETWORK) \
@@ -92,7 +116,7 @@ add-taxi-d: ## Start single detached taxi container
 		taxi:latest
 .PHONY: add-taxi-d
 
-add-taxis: ## Start multiple detached TAXI containers
+add-taxis: ## Start multiple detached Taxi containers
 	@read -p "How many TAXI containers do you want to start? " count; \
 	for i in $$(seq 1 $$count); do \
 		name=taxi-$$(uuidgen | cut -c1-8); \
