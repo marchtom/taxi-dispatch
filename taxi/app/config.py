@@ -8,7 +8,6 @@ class Settings(BaseSettings):
     # Taxi movement
     speed_min: int = 1
     speed_max: int = 3
-    grid_size: int = 100
 
     class Config:
         env_file = ".env"
